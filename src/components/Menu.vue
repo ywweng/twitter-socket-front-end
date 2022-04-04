@@ -12,10 +12,9 @@
               首頁
             </router-link>
           </li>
-          <!-- TODO:公開聊天室 -->
           <li class="menu-icon mb-4">
             <router-link to="/chatroom" class="menu-text">
-              <img class="me-3" :src="chatUrl" />
+              <img class="me-4" :src="chatUrl" />
               公開聊天室
             </router-link>
           </li>
@@ -81,113 +80,97 @@
 </template>
 
 <script>
-  import NewTweetModal from "./../components/NewTweetModal.vue";
-  import { mapState } from "vuex";
+import NewTweetModal from "./../components/NewTweetModal.vue";
+import { mapState } from "vuex";
 
-  export default {
-    name: "Menu",
-    components: {
-      NewTweetModal,
+export default {
+  name: "Menu",
+  components: {
+    NewTweetModal,
+  },
+  data() {
+    return {
+      mainUrl: require("./../assets/Menu.svg"),
+      mainActiveUrl: require("./../assets/MenuActive.svg"),
+      chatUrl: require("./../assets/Chat.svg"),
+      chatActiveUrl: require("./../assets/ChatActive.svg"),
+      userProfileUrl: require("./../assets/UserProfile.svg"),
+      userProfileActiveUrl: require("./../assets/UserProfileActive.svg"),
+      settingUrl: require("./../assets/Setting.svg"),
+      settingActiveUrl: require("./../assets/SettingActive.svg"),
+      alertMsg: "",
+      alertStatus: false,
+    };
+  },
+  computed: {
+    ...mapState(["currentUser", "isAuthenticated", "newTweets"]),
+  },
+  methods: {
+    alertShow() {
+      const bootstrap = require("bootstrap");
+      let alertNode = document.querySelector("#alert");
+      bootstrap.Alert.getInstance(alertNode);
+      setTimeout(() => {
+        this.alertStatus = false;
+      }, 2000);
     },
-    data() {
-      return {
-        mainUrl: require("./../assets/Menu.svg"),
-        mainActiveUrl: require("./../assets/MenuActive.svg"),
-        chatUrl: require("./../assets/Chat.svg"),
-        chatActiveUrl: require("./../assets/ChatActive.svg"),
-        userProfileUrl: require("./../assets/UserProfile.svg"),
-        userProfileActiveUrl: require("./../assets/UserProfileActive.svg"),
-        settingUrl: require("./../assets/Setting.svg"),
-        settingActiveUrl: require("./../assets/SettingActive.svg"),
-        alertMsg: "",
-        alertStatus: false,
-      };
+    logout() {
+      this.$store.commit("revokeAuthentication");
+      this.$router.push("/login");
     },
-    computed: {
-      ...mapState(["currentUser", "isAuthenticated", "newTweets"]),
-    },
-    methods: {
-      alertShow() {
-        const bootstrap = require("bootstrap");
-        let alertNode = document.querySelector("#alert");
-        bootstrap.Alert.getInstance(alertNode);
-        setTimeout(() => {
-          this.alertStatus = false;
-        }, 2000);
-      },
-      logout() {
-        this.$store.commit("revokeAuthentication");
-        this.$router.push("/login");
-      },
-      changeMenu(path) {
-        if (path.includes("/main")) {
-          this.mainUrl = this.mainActiveUrl;
-          return
-        }
-        if (path.includes("/chatroom")) {
-          this.chatUrl = this.chatActiveUrl;
-          return
-        }
-        if (path.includes("/user-profile")) {
-          this.userProfileUrl = this.userProfileActiveUrl;
-          return
-        }
-        if (path.includes("/setting")) {
-          this.settingUrl = this.settingActiveUrl;
-          return
-        }
-        }
-      },
-    },
-    mounted() {
-      if (!localStorage.getItem("token")) {
-        this.alertMsg = "您尚未登入";
-        this.alertStatus = "error";
-        this.alertShow();
-        setTimeout(() => {
-          this.$router.push("/login");
-        }, 5000);
+    changeMenu(path) {
+      if (path.includes("/main")) {
+        this.mainUrl = this.mainActiveUrl;
+        return;
+      }
+      if (path.includes("/chatroom")) {
+        this.chatUrl = this.chatActiveUrl;
+        return;
+      }
+      if (path.includes("/user-profile")) {
+        this.userProfileUrl = this.userProfileActiveUrl;
+        return;
+      }
+      if (path.includes("/setting")) {
+        this.settingUrl = this.settingActiveUrl;
+        return;
       }
     },
-    created() {
-      this.changeMenu(this.$route.path);
-      //   // TODO:改成 watch $route
-      //   if (this.$route.path === "/main") {
-      //     this.mainUrl = this.mainActiveUrl;
-      //   }
-      //   if (this.$route.path === "/user-profile") {
-      //     this.userProfileUrl = this.userProfileActiveUrl;
-      //   }
-      //   if (this.$route.path === "/setting") {
-      //     this.settingUrl = this.settingActiveUrl;
-      //   }
-    },
-    watch: {
-      $route(to) {
-        this.changeMenu(to.path);
-      },
-    },
-  };
+  },
+  mounted() {
+    if (!localStorage.getItem("token")) {
+      this.alertMsg = "您尚未登入";
+      this.alertStatus = "error";
+      this.alertShow();
+      setTimeout(() => {
+        this.$router.push("/login");
+      }, 5000);
+    }
+  },
+  created() {
+    this.changeMenu(this.$route.path);
+  },
+};
 </script>
 
 <style>
-  #menu {
-    width: 230px;
-  }
-  .btn-tweet {
-    max-width: 210px;
-  }
-  .logo {
-    margin-bottom: 47px;
-  }
-  .profile-icon {
-    margin-left: 3px;
-    margin-right: 20px;
-  }
-  .router-link-active {
-    color: #ff6600;
-  }
-  .logout {
-    cursor: pointer;
-  }
+#menu {
+  width: 230px;
+}
+.btn-tweet {
+  max-width: 210px;
+}
+.logo {
+  margin-bottom: 47px;
+}
+.profile-icon {
+  margin-left: 3px;
+  margin-right: 20px;
+}
+.router-link-active {
+  color: #ff6600;
+}
+.logout {
+  cursor: pointer;
+}
 </style>

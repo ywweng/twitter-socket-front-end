@@ -13,7 +13,7 @@
           <div
             class="form-input d-flex flex-column"
             :class="{
-              'form-input-error': isNull && !account,
+              'form-input-error': isNull && !account
             }"
           >
             <label for="account" class="form-input-text">帳號</label>
@@ -50,7 +50,7 @@
           <div
             class="form-input d-flex flex-column"
             :class="{
-              'form-input-error': isNull && !email,
+              'form-input-error': isNull && !email
             }"
           >
             <label for="email" class="form-input-text">Email</label>
@@ -143,7 +143,7 @@
   export default {
     name: 'Setting',
     components: {
-      Menu,
+      Menu
     },
 
     data() {
@@ -157,11 +157,11 @@
         isNull: false,
         alertMsg: '',
         alertStatus: false,
-        isProcessing: false,
+        isProcessing: false
       }
     },
     computed: {
-      ...mapState(['currentUser']),
+      ...mapState(['currentUser'])
     },
     created() {
       this.setUser()
@@ -203,7 +203,7 @@
             name: this.name,
             email: this.email,
             password: this.password,
-            checkPassword: this.pwdChecked,
+            checkPassword: this.pwdChecked
           })
           if (data.status === 'error') {
             throw new Error(data.message)
@@ -221,8 +221,8 @@
           this.alertShow()
           this.isProcessing = false
         }
-      },
-    },
+      }
+    }
   }
 </script>
 

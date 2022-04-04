@@ -5,7 +5,7 @@
         <Menu />
       </div>
       <div class="col me-3 d-flex" id="main">
-          <router-view />
+        <router-view />
       </div>
       <div class="col-3 popular-user mh-100">
         <PopularUser />
@@ -17,13 +17,13 @@
 <script>
   import Menu from './../components/Menu.vue'
   import PopularUser from './../components/PopularUser.vue'
-  
+
   export default {
     name: 'Main',
     components: {
       Menu,
-      PopularUser,
-    },
+      PopularUser
+    }
   }
 </script>
 
