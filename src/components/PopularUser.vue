@@ -129,7 +129,6 @@
     background: #f5f8fa;
     border-radius: 14px;
     max-width: 350px;
-    min-height: 500px;
   }
   .title {
     padding-left: 15px;

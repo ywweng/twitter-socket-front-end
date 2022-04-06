@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid vh-100">
-    <div class="row h-100">
+    <div class="row h-100 flex-nowrap">
       <div class="col-3 menu mh-100">
         <Menu />
       </div>

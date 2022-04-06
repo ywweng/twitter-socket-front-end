@@ -1,5 +1,5 @@
 <template>
-  <div class="row h-100">
+  <div class="row h-100 flex-nowrap">
     <div class="menu col-3 mh-100">
       <Menu />
     </div>

@@ -21,39 +21,43 @@
           <span class="text-account">@Apple</span>
         </div>
       </div>
-      <div class="col-5 d-flex flex-column" id="chatroom">
+      <div class="col-5 d-flex flex-column" id="chatroom" ref="chatroom">
         <Spinner v-if="isLoading" />
         <div class="title menu-text">公開聊天室</div>
         <div
           class="dialogue d-flex flex-column justify-content-end flex-grow-1"
         >
-          <div class="reminder d-flex justify-content-center">
-            <span class="status">Apple 上線</span>
-          </div>
-          <div class="user remote d-flex m-3">
-            <div class="d-flex align-items-end pb-3">
-              <img
-                class="avatar"
-                width="50px"
-                src="https://img.yxwoo.com:4433/uploads/images/xiaz/2020/0407/1586223138482.jpg"
-                alt=""
-              />
+          <div class="h-100" ref="dialogue">
+            <div class="reminder d-flex justify-content-center">
+              <span class="status">Apple 上線</span>
             </div>
-            <div class="d-flex flex-column">
-              <div class="txt mb-0">
-                Amet minim mollit non deserunt ullamco est sit aliqua dolor do
-                amet sint.
+            <div class="user remote d-flex m-3">
+              <div class="d-flex align-items-end pb-3">
+                <img
+                  class="avatar"
+                  width="50px"
+                  src="https://img.yxwoo.com:4433/uploads/images/xiaz/2020/0407/1586223138482.jpg"
+                  alt=""
+                />
               </div>
-              <div class="time">下午4:21</div>
+              <div class="d-flex flex-column">
+                <div class="txt mb-0 w-75">
+                  Amet minim mollit non deserunt ullamco est sit aliqua dolor do
+                  amet sint.
+                </div>
+                <div class="time">下午4:21</div>
+              </div>
             </div>
-          </div>
-          <div class="user local d-flex flex-column m-3 align-items-end">
-            <div class="txt mb-0">
-              How are you?How are you?How are you?How are you?How are you?How
-              are you?How are you?How are you?How are you?How are you?How are
-              you?
+            <div
+              class="user local d-flex flex-column m-3 align-items-end"
+              v-for="(msg, index) in localMsgs"
+              :key="index"
+            >
+              <div class="txt mb-0 w-75">
+                {{ msg }}
+              </div>
+              <div class="time">下午6:05</div>
             </div>
-            <div class="time">下午6:05</div>
           </div>
         </div>
         <div class="chat-input d-flex justify-content-center">
@@ -61,8 +65,10 @@
             type="text"
             class="form-control flex-grow-1"
             placeholder="輸入訊息..."
+            v-model="content"
+            @keydown.enter="chat"
           />
-          <button type="submit" class="ms-3">
+          <button type="button" class="ms-3" @click.prevent="chat">
             <img src="./../assets/send.svg" />
           </button>
         </div>
@@ -74,6 +80,7 @@
 <script>
   import Menu from './../components/Menu.vue'
   import Spinner from './../components/Spinner.vue'
+  import { io } from 'socket.io-client'
 
   export default {
     name: 'ChatRoom',
@@ -83,8 +90,39 @@
     },
     data() {
       return {
-        isLoading: false
+        isLoading: false,
+        socket: null,
+        content: '',
+        localMsgs: [],
+        remoteMsgs: []
       }
+    },
+    methods: {
+      socketConnect() {
+        const socket = io('https://project-simple-twitter.herokuapp.com/')
+        this.socket = socket
+        this.socket.on('connect', () => {
+          console.log('success')
+        })
+      },
+      chat() {
+        if (this.content.length > 0) {
+          this.socket.emit('chat message', this.content)
+          console.log('傳送success')
+          this.content = ''
+        }
+        this.socket.on('chat message', (msg) => {
+          this.localMsgs.push(msg)
+          console.log(msg)
+          let ele = document.querySelector('.dialogue')
+          ele.scrollTop = ele.scrollHeight
+        })
+      }
+    },
+    mounted() {
+      this.socketConnect()
+      let ele = document.querySelector('.dialogue')
+      ele.scrollTop = ele.scrollHeight
     }
   }
 </script>
@@ -124,6 +162,7 @@
     background: rgb(250, 250, 250);
   }
   .dialogue {
+    overflow-y: auto;
     padding: 0.5rem 0;
   }
   .reminder {
@@ -162,5 +201,6 @@
     background-color: #e6ecf0;
     border-radius: 50px;
     height: 2rem;
+    border: none;
   }
 </style>

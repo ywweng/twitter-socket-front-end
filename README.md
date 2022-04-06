@@ -22,6 +22,7 @@
 - 使用者能追蹤/取消追蹤其他使用者
 - 使用者能對別人的推文按 Like/unlike
 - 使用者瀏覽特定使用者的資料
+- `New` 使用者可以在公開聊天室聊天
 - 管理者可從後台登入
 - 管理者能瀏覽全站的推文及使用者的清單
 
@@ -73,3 +74,5 @@ npm run serve
 
 - [Kemal](https://github.com/Kemal-Wuzhi)
 - [Rain](https://github.com/lcy101u/)
+
+> 標註為 `New` 的功能由 Abbie 及 Rain 協作
