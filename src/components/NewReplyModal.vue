@@ -103,9 +103,8 @@
     name: 'NewReplyModal',
     props: {
       tweet: {
-        type: [Array, Object],
-        // required: true,
-      },
+        type: [Array, Object]
+      }
     },
     data() {
       return {
@@ -113,11 +112,11 @@
         alertMsg: '',
         alertStatus: false,
         isError: false,
-        errorMsg: '',
+        errorMsg: ''
       }
     },
     computed: {
-      ...mapState(['currentUser']),
+      ...mapState(['currentUser'])
     },
     filters: {
       fromNow(datetime) {
@@ -125,7 +124,7 @@
           return '-'
         }
         return moment(datetime).fromNow()
-      },
+      }
     },
     methods: {
       alertShow() {
@@ -154,7 +153,7 @@
 
           const { data } = await tweetsAPI.postTweetReply({
             id: this.tweet.id,
-            comment: this.comment,
+            comment: this.comment
           })
           if (data.status === 'error') {
             throw new Error(data.message)
@@ -162,13 +161,13 @@
           // tweet list
           this.$emit('after-reply-submit', {
             tweetId: this.tweet.id,
-            replyCount: this.tweet.replyCount + 1,
+            replyCount: this.tweet.replyCount + 1
           })
           // single tweet
           this.$emit('after-single-reply', {
             User: this.currentUser,
             comment: this.comment,
-            created_at: new Date().toISOString(),
+            created_at: new Date().toISOString()
           })
           this.alertMsg = '留言成功'
           this.alertStatus = 'success'
@@ -181,69 +180,69 @@
           this.alertStatus = 'error'
           this.alertShow()
         }
-      },
-    },
+      }
+    }
   }
 </script>
 
 <style scoped>
-.modal.show .modal-dialog {
-  margin-top: 54px;
-}
-.modal-header .btn-close {
-  margin: 0.5rem auto 0.5rem 0.5rem;
-  color: #ff6600;
-}
-.modal-header {
-  border-bottom: 1px solid #e6ecf0;
-  padding: 0;
-}
-.btn-close {
-  background: url("./../assets/btn-close.svg") center 0.5em no-repeat;
-}
-.btn-close:hover {
-  opacity: 1;
-}
-.btn-active {
-  margin-left: 20px;
-}
-.modal-content {
-  height: 100%;
-  border: 0;
-  border-radius: 14px;
-}
-.modal-footer {
-  border-top: 0;
-}
-.input-new-tweet {
-  border: none;
-  width: 100%;
-  resize: none;
-  outline: none;
-}
-.tweet-content {
-  margin: 5px 0 5px 0;
-}
-.text-account {
-  font-size: 13px;
-}
-.text-tag {
-  color: #ff6600;
-  font-size: 13px;
-}
-.border {
-  margin-top: 5px;
-  width: 2px;
-  height: 60%;
-  background: #ccd6dd;
-}
-.reply-content {
-  margin-top: 10px;
-}
-@media screen and (min-width: 576px) {
-  .modal-dialog {
-    max-width: 600px;
-    height: 450px;
+  .modal.show .modal-dialog {
+    margin-top: 54px;
   }
-}
+  .modal-header .btn-close {
+    margin: 0.5rem auto 0.5rem 0.5rem;
+    color: #ff6600;
+  }
+  .modal-header {
+    border-bottom: 1px solid #e6ecf0;
+    padding: 0;
+  }
+  .btn-close {
+    background: url('./../assets/btn-close.svg') center 0.5em no-repeat;
+  }
+  .btn-close:hover {
+    opacity: 1;
+  }
+  .btn-active {
+    margin-left: 20px;
+  }
+  .modal-content {
+    height: 100%;
+    border: 0;
+    border-radius: 14px;
+  }
+  .modal-footer {
+    border-top: 0;
+  }
+  .input-new-tweet {
+    border: none;
+    width: 100%;
+    resize: none;
+    outline: none;
+  }
+  .tweet-content {
+    margin: 5px 0 5px 0;
+  }
+  .text-account {
+    font-size: 13px;
+  }
+  .text-tag {
+    color: #ff6600;
+    font-size: 13px;
+  }
+  .border {
+    margin-top: 5px;
+    width: 2px;
+    height: 60%;
+    background: #ccd6dd;
+  }
+  .reply-content {
+    margin-top: 10px;
+  }
+  @media screen and (min-width: 576px) {
+    .modal-dialog {
+      max-width: 600px;
+      height: 450px;
+    }
+  }
 </style>

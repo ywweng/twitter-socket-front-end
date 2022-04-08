@@ -21,42 +21,42 @@
           <span class="text-account">@Apple</span>
         </div>
       </div>
-      <div class="col-5 d-flex flex-column" id="chatroom" ref="chatroom">
+      <div class="col-5 d-flex flex-column" id="chatroom">
         <Spinner v-if="isLoading" />
         <div class="title menu-text">公開聊天室</div>
         <div
           class="dialogue d-flex flex-column justify-content-end flex-grow-1"
         >
-          <div class="h-100" ref="dialogue">
+          <div class="h-100">
             <div class="reminder d-flex justify-content-center">
               <span class="status">Apple 上線</span>
             </div>
-            <div class="user remote d-flex m-3">
-              <div class="d-flex align-items-end pb-3">
+            <div
+              class="user"
+              :class="{
+                remote: message.user.id !== currentUser.id,
+                local: message.user.id === currentUser.id
+              }"
+              v-for="(message, index) in messages"
+              :key="index"
+            >
+              <div
+                class="d-flex align-items-end pb-3"
+                v-if="message.user.id !== currentUser.id"
+              >
                 <img
                   class="avatar"
                   width="50px"
-                  src="https://img.yxwoo.com:4433/uploads/images/xiaz/2020/0407/1586223138482.jpg"
+                  :src="message.user.avatar"
                   alt=""
                 />
               </div>
-              <div class="d-flex flex-column">
-                <div class="txt mb-0 w-75">
-                  Amet minim mollit non deserunt ullamco est sit aliqua dolor do
-                  amet sint.
+              <div class="d-flex flex-column content">
+                <div class="txt mb-0">
+                  {{ message.msg }}
                 </div>
-                <div class="time">下午4:21</div>
+                <div class="time">{{ message.date | time }}</div>
               </div>
-            </div>
-            <div
-              class="user local d-flex flex-column m-3 align-items-end"
-              v-for="(msg, index) in localMsgs"
-              :key="index"
-            >
-              <div class="txt mb-0 w-75">
-                {{ msg }}
-              </div>
-              <div class="time">下午6:05</div>
             </div>
           </div>
         </div>
@@ -65,8 +65,7 @@
             type="text"
             class="form-control flex-grow-1"
             placeholder="輸入訊息..."
-            v-model="content"
-            @keydown.enter="chat"
+            v-model.trim="content"
           />
           <button type="button" class="ms-3" @click.prevent="chat">
             <img src="./../assets/send.svg" />
@@ -78,9 +77,12 @@
 </template>
 
 <script>
+  import { Toast } from './../utils/helpers'
   import Menu from './../components/Menu.vue'
   import Spinner from './../components/Spinner.vue'
   import { io } from 'socket.io-client'
+  import { mapState } from 'vuex'
+  import { timeFilter } from './../utils/mixins'
 
   export default {
     name: 'ChatRoom',
@@ -93,36 +95,61 @@
         isLoading: false,
         socket: null,
         content: '',
-        localMsgs: [],
-        remoteMsgs: []
+        messages: []
       }
+    },
+    mixins: [timeFilter],
+    computed: {
+      ...mapState(['currentUser'])
     },
     methods: {
       socketConnect() {
         const socket = io('https://project-simple-twitter.herokuapp.com/')
         this.socket = socket
         this.socket.on('connect', () => {
-          console.log('success')
+          console.log('已連線')
         })
       },
+      socketDisconnect() {
+        this.socket.on('disconnect', () => {
+          console.log('斷線')
+        })
+      },
+      scrollToEnd() {
+        let ele = document.querySelector('.dialogue')
+        ele.scrollTop = ele.scrollHeight
+      },
       chat() {
-        if (this.content.length > 0) {
-          this.socket.emit('chat message', this.content)
-          console.log('傳送success')
+        if (this.content.length === 0) {
+          Toast.fire({
+            icon: 'warning',
+            title: '不可空白'
+          })
+          return
+        } else if (this.content.length > 0) {
+          const { id, account, avatar, name } = this.currentUser
+          const user = { id, account, avatar, name }
+          this.socket.emit('public message', {
+            user,
+            msg: this.content
+          })
           this.content = ''
         }
-        this.socket.on('chat message', (msg) => {
-          this.localMsgs.push(msg)
-          console.log(msg)
-          let ele = document.querySelector('.dialogue')
-          ele.scrollTop = ele.scrollHeight
+      },
+      getNewMessage() {
+        this.socket.on('public message', (data) => {
+          this.messages.push(data)
+          this.scrollToEnd()
         })
       }
     },
     mounted() {
       this.socketConnect()
-      let ele = document.querySelector('.dialogue')
-      ele.scrollTop = ele.scrollHeight
+      this.getNewMessage()
+      this.scrollToEnd()
+    },
+    destroyed() {
+      this.socketDisconnect()
     }
   }
 </script>
@@ -178,14 +205,29 @@
     padding: 10px 15px;
     max-width: 400px;
   }
+  .remote {
+    display: flex;
+    margin: 1rem;
+  }
   .remote .txt {
     background: #e6ecf0;
     border-radius: 25px 25px 25px 0;
+  }
+  .remote .content {
+    align-items: flex-start;
+  }
+  .local {
+    display: flex;
+    margin: 1rem;
+    justify-content: flex-end;
   }
   .local .txt {
     background: #ff6600;
     color: white;
     border-radius: 25px 25px 0 25px;
+  }
+  .local .content {
+    align-items: flex-end;
   }
   .time {
     color: #657786;

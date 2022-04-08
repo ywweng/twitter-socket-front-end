@@ -8,6 +8,15 @@ export const fromNowFilter = {
   }
 }
 
+export const timeFilter = {
+  filters: {
+    time(datetime) {
+      moment.locale('zh-TW')
+      return moment(datetime).format('Ah:mm')
+    }
+  }
+}
+
 export const emptyImageFilter = {
   filters: {
     emptyImage(src) {
