@@ -126,15 +126,14 @@
             title: '不可空白'
           })
           return
-        } else if (this.content.length > 0) {
-          const { id, account, avatar, name } = this.currentUser
-          const user = { id, account, avatar, name }
-          this.socket.emit('public message', {
-            user,
-            msg: this.content
-          })
-          this.content = ''
         }
+        const { id, account, avatar, name } = this.currentUser
+        const user = { id, account, avatar, name }
+        this.socket.emit('public message', {
+          user,
+          msg: this.content
+        })
+        this.content = ''
       },
       getNewMessage() {
         this.socket.on('public message', (data) => {
